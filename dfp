@@ -3,14 +3,14 @@
 DF="/usr/bin/df"
 
 usage() {
-	echo 'usage: pbar [OPTION] DEVICE...'
+	echo 'usage: dfp [OPTION] DEVICE...'
 	echo
 	echo '  -p    print given prefix at the begin of each line'
 	echo '  -h    display this help and exit'
 	exit
 }
 
-[[ $1 ]] || usage
+[[ $1 ]] && [[ $1 != "-h" ]] || usage
 
 args=$@
 
