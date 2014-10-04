@@ -3,21 +3,37 @@
 DF="/usr/bin/df"
 
 usage() {
-	echo 'usage: dfp [OPTION] DEVICE...'
+	echo 'usage: dfp [-p PREFIX] DEVICE...'
 	echo
 	echo '  -p    print given prefix at the begin of each line'
 	echo '  -h    display this help and exit'
 	exit
 }
 
-[[ $1 ]] && [[ $1 != "-h" ]] || usage
+while getopts ":hp:" optname; do
+	case "$optname" in
+		"p")
+			prefix=$OPTARG
+			;;
+		"h")
+			usage
+			;;
+		"?")
+			echo "Unknown option $OPTARG"
+			usage
+			;;
+		":")
+			echo "No argument value for option $OPTARG"
+			;;
+		*)
+			echo "Unknown error while processing options"
+			;;
+		esac
+done
 
-args=$@
-
-if [[ $1 == -p ]]; then
-	prefix="$2"
-	args=${@:3}
-fi
+IFS=$"NUL"
+declare -a args=${@:$OPTIND}
+[[ ${args:0} ]] || args=$(df --output=target | tail --lines=+2 | tr "\n" $"NUL")
 
 for device in $args; do
 	if ! [[ "$($DF $device)" ]]; then
